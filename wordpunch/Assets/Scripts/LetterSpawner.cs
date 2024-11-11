@@ -2,15 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpawnLetter : MonoBehaviour
+public class LetterSpawner : MonoBehaviour
 {
     public GameObject[] letterPrefabs;
-    public float cylinderRadius = 30.0f;
-    public float cylinderHeight = 30.0f;
-    public int spawnCount = 30;
 
-    public float minDistance = 10.0f;
-    private List<Vector3> spawnedPositions = new List<Vector3>();
+    public float distanceAboveGround = 5.0f;
 
     private Dictionary<char, int> letterWeights = new Dictionary<char, int>
     {
@@ -23,67 +19,51 @@ public class SpawnLetter : MonoBehaviour
 
     private List<char> weightedLetters; // letter pool
 
-    void GenerateWeightedLetterList()
+    public float letterSpacing = 0.5f; // Spacing between letters
+
+    public float letterScale = 0.5f;
+
+    private Vector3 GetPositionOnCylinder(int row, int col, int rows, int cols, float radius)
     {
-        weightedLetters = new List<char>();
-        foreach (var letter in letterWeights)
-        {
-            for (int i = 0; i < letter.Value; i++)
-            {
-                weightedLetters.Add(letter.Key);
-            }
-        }
-    }
+        float angle = (2 * Mathf.PI / cols) * col; // Calculate angle for each column
+        float height = row * letterSpacing + distanceAboveGround;
 
-    void SpawnLetters()
-    {
-        int spawnedCount = 0;
-        while (spawnedCount < spawnCount)
-        {
-            char selectedLetter = GetRandomLetter();
-            GameObject letterPrefab = GetLetterPrefab(selectedLetter);
-
-            if (letterPrefab != null)
-            {
-                Vector3 spawnPosition = GetRandomPositionOnCylinder();
-
-                if (IsPositionValid(spawnPosition))
-                {
-                    Instantiate(letterPrefab, spawnPosition, Quaternion.LookRotation(-spawnPosition.normalized));
-                    spawnedPositions.Add(spawnPosition);
-                    spawnedCount++;
-                }
-            }
-        }
-    }
-
-    bool IsPositionValid(Vector3 position)
-    {
-        foreach (Vector3 spawnedPosition in spawnedPositions)
-        {
-            if (Vector3.Distance(position, spawnedPosition) < minDistance)
-            {
-                return false; // avoid overlapping
-            }
-        }
-        return true;
-    }
-
-    Vector3 GetRandomPositionOnCylinder()
-    {
-        float angle = Random.Range(0, 2 * Mathf.PI);
-        float height = Random.Range(0, cylinderHeight);
-
-        float x = Mathf.Cos(angle) * cylinderRadius;
-        float z = Mathf.Sin(angle) * cylinderRadius;
+        // Convert polar coordinates (angle, radius) to Cartesian coordinates (x, z)
+        float x = Mathf.Cos(angle) * radius;
+        float z = Mathf.Sin(angle) * radius;
 
         return new Vector3(x, height, z);
     }
 
-    char GetRandomLetter()
+    public void InitializeGrid(char[,] letterGrid)
     {
-        int randomIndex = Random.Range(0, weightedLetters.Count);
-        return weightedLetters[randomIndex];
+        int rows = letterGrid.GetLength(0); // Number of rows in the 2D array
+        int cols = letterGrid.GetLength(1); // Number of columns in the 2D array
+
+        float cylinderHeight = rows * letterSpacing;
+        float cylinderRadius = (cols * letterSpacing) / (2 * Mathf.PI);
+
+        // Spawn letters in a grid pattern around the cylinder
+        for (int row = 0; row < rows; row++)
+        {
+            for (int col = 0; col < cols; col++)
+            {
+                char letter = letterGrid[row, col];
+                GameObject letterPrefab = GetLetterPrefab(letter);
+
+                if (letterPrefab != null)
+                {
+                    Vector3 spawnPosition = GetPositionOnCylinder(row, col, rows, cols, cylinderRadius);
+                    GameObject letterInstance = Instantiate(letterPrefab, spawnPosition, Quaternion.identity);
+
+                    // Scale the letter
+                    letterInstance.transform.localScale = new Vector3(letterScale, letterScale, letterScale);
+                    Vector3 targetPosition = new Vector3(0, spawnPosition.y, 0);
+                    letterInstance.transform.rotation = Quaternion.LookRotation(targetPosition - spawnPosition);
+                    // TODO:Store row and column index in the letter's script or component
+                }
+            }
+        }
     }
 
     GameObject GetLetterPrefab(char letter)
@@ -99,8 +79,6 @@ public class SpawnLetter : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GenerateWeightedLetterList();
-        SpawnLetters();
     }
 
     // Update is called once per frame
