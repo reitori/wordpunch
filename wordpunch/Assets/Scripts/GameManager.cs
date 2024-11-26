@@ -11,7 +11,8 @@ public class GameManager : MonoBehaviour
     public LetterSpawner letterSpawner;
     public char[,] letterGrid;
     public TileGrid tileGrid;
-    public LinkedList<GameObject> highlightedTiles;
+    // public LinkedList<GameObject> highlightedTiles;
+    public List<Tile> highlightedTiles;
     
     // Start is called before the first frame update
     void Start()
@@ -21,13 +22,14 @@ public class GameManager : MonoBehaviour
         mainCam.enabled = true;
 
         Debug.Log("Starting");
-        gridGenerator = new GridGenerator();
+        // gridGenerator = new GridGenerator();
         letterGrid = gridGenerator.GenerateGrid(); // create and store the grid of random letters
         Debug.Log(letterGrid.ToString());
         tileGrid = new TileGrid(letterGrid); // instantiate an instance of TileGrid using letterGrid 
         letterSpawner.InitializeGrid(letterGrid, tileGrid); // spawn the letter tiles and store them in tileGrid
         
-        highlightedTiles = new LinkedList<GameObject>();
+        // highlightedTiles = new LinkedList<GameObject>();
+        highlightedTiles = new List<Tile>();
     }
 
     // Update is called once per frame
@@ -54,6 +56,39 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    
+    public void highlightTile(int x, int y, Color color)
+    {
+        GameObject tileObject = tileGrid.tiles[x, y];
+        // change the color of the tile
+        Renderer objectRenderer = tileObject.GetComponent<Renderer>();
+        objectRenderer.material.color = color;
+    }
+
+    public bool wordValid(string word) {
+        return gridGenerator.IsWordValid(word);
+    }
+
+    public void explodeWord() {
+        foreach (Tile tile in highlightedTiles) {
+            highlightTile(tile.x, tile.y, Color.green);
+            // add effect
+        }
+        highlightedTiles.Clear();
+    }
+
+    public void invalidWarn() {
+        foreach (Tile tile in highlightedTiles) {
+            highlightTile(tile.x, tile.y, Color.red);
+        }
+        // add effect
+        highlightedTiles.Clear();
+    }
+
+    public void restoreTiles() {
+        foreach (Tile tile in highlightedTiles) {
+            highlightTile(tile.x, tile.y, Color.white);
+        }
+        highlightedTiles.Clear();
+    }
     
 }

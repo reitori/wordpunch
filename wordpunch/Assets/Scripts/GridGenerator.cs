@@ -33,18 +33,6 @@ public class GridGenerator : MonoBehaviour
         LoadWordsFromFile("CommonWords");
         GenerateWeightedLetterList();
         prepareLetterGrid();
-        // print the letter grid
-        Debug.Log("Letter Grid:");
-        for (int i = 0; i < numRows; i++)
-        {
-            string row = "";
-            for (int j = 0; j < numCols; j++)
-            {
-                row += letterGrid[i, j];
-            }
-            Debug.Log(row);
-        }
-
         return letterGrid;
     }
 
@@ -236,6 +224,7 @@ public class GridGenerator : MonoBehaviour
     // word is in capitals
     public bool IsWordValid(string word)
     {
+        // can change to binary search
         return scrabbleWords.Contains(word);
     }
 
