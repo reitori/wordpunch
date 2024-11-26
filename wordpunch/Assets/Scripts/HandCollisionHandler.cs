@@ -5,8 +5,9 @@ using UnityEngine;
 public class HandCollisionHandler : MonoBehaviour
 {
     public GameManager gameManager;
-    public bool colliding;
-    public float uncollideTime = 0f;
+    [SerializeField] bool colliding;
+    [SerializeField] float uncollideTime = 0f;
+    [SerializeField] bool mousedown;
     public void Start()
     {
         // initialize gameManager
@@ -15,7 +16,8 @@ public class HandCollisionHandler : MonoBehaviour
 
     public void Update()
     {
-        if (!colliding)
+        mousedown = Input.GetMouseButton(0);
+        if (!colliding || !mousedown)
         {
             uncollideTime += Time.deltaTime;
         }
@@ -29,6 +31,7 @@ public class HandCollisionHandler : MonoBehaviour
             {
                 word += tile.letter;
             }
+            print(word);
             if (gameManager.wordValid(word))
             {
                 // word is valid
@@ -44,6 +47,8 @@ public class HandCollisionHandler : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("DETECT: " + other.gameObject.GetComponent<Tile>().letter + " (" +
+                  other.gameObject.GetComponent<Tile>().x + ", " + other.gameObject.GetComponent<Tile>().y + ")");
         colliding = true;
         uncollideTime = 0f;
 
@@ -70,15 +75,22 @@ public class HandCollisionHandler : MonoBehaviour
                 // handle the case where the player selects a highlighted tile again
             }
         }
-        gameManager.highlightedTiles.Add(hitTile);
-        gameManager.highlightTile(hitTile.x, hitTile.y, Color.yellow);
-        // Log the name of the object this collider hits
-        Debug.Log("Hand hit: " + other.gameObject.GetComponent<Tile>().letter + " (" + other.gameObject.GetComponent<Tile>().x + ", " + other.gameObject.GetComponent<Tile>().y + ")");
-        // Renderer objectRenderer = other.GetComponent<Renderer>();
-        // // if (objectRenderer != null)
-        // // {
-        // // Change the color to indicate highlighting (MAKE THIS A FUNCTION DOWN THE LINE)
-        //     objectRenderer.material.color = Color.yellow; // Change the color to red
+
+        // if (true)
+            // gameManager.highlightedTiles.Count == 0
+            // || gameManager.tileGrid.ValidNewTile(gameManager.highlightedTiles[highlightedCount - 1], hitTile))
+        // {
+            gameManager.highlightedTiles.Add(hitTile);
+            gameManager.highlightTile(hitTile.x, hitTile.y, Color.yellow);
+            // Log the name of the object this collider hits
+            Debug.Log("Hand hit: " + other.gameObject.GetComponent<Tile>().letter + " (" +
+                      other.gameObject.GetComponent<Tile>().x + ", " + other.gameObject.GetComponent<Tile>().y + ")");
+            // Renderer objectRenderer = other.GetComponent<Renderer>();
+            // // if (objectRenderer != null)
+            // // {
+            // // Change the color to indicate highlighting (MAKE THIS A FUNCTION DOWN THE LINE)
+            //     objectRenderer.material.color = Color.yellow; // Change the color to red
+            // }
         // }
     }
 
@@ -87,4 +99,5 @@ public class HandCollisionHandler : MonoBehaviour
         print("exit");
         colliding = false;
     }
+    
 }

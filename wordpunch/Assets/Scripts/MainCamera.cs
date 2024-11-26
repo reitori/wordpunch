@@ -43,7 +43,7 @@ public class MainCamera : MonoBehaviour
         }
         else
         {
-            hand.SetActive(false); // Hide the collider when not pressing the mouse
+            // hand.SetActive(false); // Hide the collider when not pressing the mouse
         }
     }
 

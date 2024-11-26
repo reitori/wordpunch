@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
         mainCam.enabled = true;
 
         Debug.Log("Starting");
-        // gridGenerator = new GridGenerator();
+        gridGenerator = gameObject.AddComponent<GridGenerator>();
         letterGrid = gridGenerator.GenerateGrid(); // create and store the grid of random letters
         Debug.Log(letterGrid.ToString());
         tileGrid = new TileGrid(letterGrid); // instantiate an instance of TileGrid using letterGrid 

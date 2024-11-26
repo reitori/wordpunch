@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 public class TileGrid
@@ -36,15 +37,24 @@ public class TileGrid
     //     }
     // }
 
-    // public bool ValidNewTile(GameObject headTile, GameObject newTile) {
-    //     if (IsAdjacentX(headTile.x, newTile.x) && IsAdjacentY(headTile.y, newTile.y)) {
-    //         return true;
-    //     }
-    //     return false;
-    // }
+    public bool ValidNewTile(GameObject headTile, GameObject newTile) {
+        if (IsAdjacentX(headTile.GetComponent<Tile>().x, newTile.GetComponent<Tile>().x) && IsAdjacentY(headTile.GetComponent<Tile>().y, newTile.GetComponent<Tile>().y)) {
+            return true;
+        }
+        return false;
+    }
+    
+    public bool ValidNewTile(Tile headTile, Tile newTile) {
+        if (IsAdjacentX(headTile.x, newTile.x) && IsAdjacentY(headTile.y, newTile.y)) {
+            Debug.Log("Tile is adjacent");
+            return true;
+        }
+        return false;
+    }
+
 
     public bool IsAdjacentX(int headX, int newX) {
-        if (newX == FloorMod(headX - 1, xSize) || newX == headX || newX == FloorMod(headX + 1, xSize)) {
+        if (newX == headX - 1 || newX == headX || newX == headX + 1) {
             return true;
         }
         return false;
