@@ -208,7 +208,7 @@ public class GridGenerator : MonoBehaviour
         }
     }
 
-    void FillRemainingCells()
+    public void FillRemainingCells()
     {
         for (int row = 0; row < numRows; row++)
         {
@@ -220,6 +220,8 @@ public class GridGenerator : MonoBehaviour
                 }
             }
     }}
+
+    
 
     // word is in capitals
     public bool IsWordValid(string word)

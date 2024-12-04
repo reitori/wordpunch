@@ -60,37 +60,64 @@ public class GameManager : MonoBehaviour
     {
         GameObject tileObject = tileGrid.tiles[x, y];
         // change the emission color of the material of the tile
-        float intensity = 5f;
-        float factor = Mathf.Pow(2, intensity);
-        tileObject.GetComponent<Renderer>().material.SetColor("_EmissionColor", color * factor);
-        tileObject.GetComponent<Renderer>().material.SetColor("_DiamondColor", color);
+        Renderer tileRenderer = tileObject.GetComponent<Renderer>();
+        tileRenderer.material.SetColor("_EmissionColor", color * 5f);
     }
 
     public bool wordValid(string word) {
         return gridGenerator.IsWordValid(word);
     }
 
+
     public void explodeWord() {
+        HandCollisionHandler hand = GameObject.Find("Hand").GetComponent<HandCollisionHandler>();
+        hand.selectLettersMode = false;
+        changeGridTransparancy(0.0f);
+
         foreach (Tile tile in highlightedTiles) {
             highlightTile(tile.x, tile.y, Color.green);
-            // add effect
         }
-        highlightedTiles.Clear();
+        Invoke("restoreTiles", 3f);
+    }
+
+    public void changeGridTransparancy(float normTransparency)
+    {
+        for(int i = 0; i < tileGrid.xSize; i++)
+        {
+            for(int j = 0; j < tileGrid.ySize; j++)
+            {
+                GameObject tileObject = tileGrid.tiles[i, j];
+                Renderer tileRenderer = tileObject.GetComponent<Renderer>();
+                Color color = tileRenderer.material.color;
+                Debug.Log(color);
+                color.a = normTransparency;
+                tileRenderer.material.color = color;
+            }
+        }
     }
 
     public void invalidWarn() {
+        HandCollisionHandler hand = GameObject.Find("Hand").GetComponent<HandCollisionHandler>();
+        hand.selectLettersMode = false;
+
         foreach (Tile tile in highlightedTiles) {
             highlightTile(tile.x, tile.y, Color.red);
         }
         // add effect
-        highlightedTiles.Clear();
+        Invoke("restoreTiles", 3f);
     }
 
     public void restoreTiles() {
+        changeGridTransparancy(1.0f);
+
         foreach (Tile tile in highlightedTiles) {
             highlightTile(tile.x, tile.y, Color.white);
+            tile.isHighlighted = false;
         }
         highlightedTiles.Clear();
+
+        HandCollisionHandler hand = GameObject.Find("Hand").GetComponent<HandCollisionHandler>();
+        hand.selectLettersMode = true;
     }
     
 }

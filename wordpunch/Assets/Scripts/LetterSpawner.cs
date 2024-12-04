@@ -40,6 +40,10 @@ public class LetterSpawner : MonoBehaviour
         int rows = letterGrid.GetLength(0); // Number of rows in the 2D array
         int cols = letterGrid.GetLength(1); // Number of columns in the 2D array
 
+        tileGrid.xSize = rows;
+        tileGrid.ySize = cols;
+
+
         float cylinderHeight = rows * letterSpacing;
         float cylinderRadius = (cols * letterSpacing) / (2 * Mathf.PI);
 
@@ -56,6 +60,18 @@ public class LetterSpawner : MonoBehaviour
                     Vector3 spawnPosition = GetPositionOnCylinder(row, col, rows, cols, cylinderRadius);
                     GameObject letterInstance = Instantiate(letterPrefab, spawnPosition, Quaternion.identity);
                     
+                    Renderer renderer = letterInstance.GetComponent<Renderer>(); //Enables Transparancy 
+                    Material material = renderer.material;
+
+                    material.SetFloat("_Mode", 3); // For Standard Shader; sets rendering mode to Transparent
+                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    material.SetInt("_ZWrite", 0);
+                    material.DisableKeyword("_ALPHATEST_ON");
+                    material.EnableKeyword("_ALPHABLEND_ON");
+                    material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                    material.renderQueue = 3000;
+
                     // destroy the mesh collider so we can rely on the boxcollider
                     Destroy(letterInstance.GetComponent<MeshCollider>());
                     Collider BCollider = letterInstance.AddComponent<BoxCollider>();

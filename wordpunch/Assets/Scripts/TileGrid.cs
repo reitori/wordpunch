@@ -46,7 +46,6 @@ public class TileGrid
     
     public bool ValidNewTile(Tile headTile, Tile newTile) {
         if (IsAdjacentX(headTile.x, newTile.x) && IsAdjacentY(headTile.y, newTile.y)) {
-            Debug.Log("Tile is adjacent");
             return true;
         }
         return false;
@@ -54,22 +53,27 @@ public class TileGrid
 
 
     public bool IsAdjacentX(int headX, int newX) {
-        if (newX == headX - 1 || newX == headX || newX == headX + 1) {
+        int XLeft = (((headX - 1) % xSize) + xSize) % xSize; //C# does not do "true" mod. This accounts for when headX-1 = -1. Then (mod xSize) is xSize - 1
+        int XRight = (headX + 1) % xSize;
+
+        if (Math.Abs(XLeft - XRight) > 2) //out of bounds
+        {
+            return false;
+        }
+        if (newX == XLeft|| newX == headX || newX == XRight) {
             return true;
         }
         return false;
     }
 
     public bool IsAdjacentY(int headY, int newY) {
-        if (newY > xSize - 1 || newY < 0) {
-            throw new ArgumentException("y position of potential tile out of bounds ");
-        }
-        if (newY == headY - 1 || newY == headY || newY == headY + 1) {
+        int YLeft = (((headY - 1) % ySize) + ySize) % ySize; 
+        int YRight = (headY + 1) % ySize;
+
+        if (newY == YLeft || newY == headY || newY == YRight) {
             return true;
         }
         return false;
-
-
     }
     
     public int FloorMod(int a, int b)

@@ -7,7 +7,6 @@ public class MainCamera : MonoBehaviour
     public float rotationSpeed = 50f;
     private GameObject hand;
     private float rayLength = 10f;
-
     void Start()
     {
         // Initialize the collider box with a BoxCollider component
@@ -28,6 +27,10 @@ public class MainCamera : MonoBehaviour
         // Get input for horizontal and vertical axis
         float horizontalRotation = Input.GetAxis("Horizontal") * rotationSpeed * Time.deltaTime;
         float verticalRotation = Input.GetAxis("Vertical") * rotationSpeed * Time.deltaTime;
+
+        Debug.Log(Input.GetAxis("Horizontal"));
+        Debug.Log(Input.GetAxis("Vertical"));
+        Debug.Log(Input.GetKey(KeyCode.A));
 
         // Rotate around the y-axis for horizontal input (left and right)
         transform.Rotate(0, horizontalRotation, 0, Space.World);
