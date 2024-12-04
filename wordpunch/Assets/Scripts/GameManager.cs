@@ -59,9 +59,11 @@ public class GameManager : MonoBehaviour
     public void highlightTile(int x, int y, Color color)
     {
         GameObject tileObject = tileGrid.tiles[x, y];
-        // change the color of the tile
-        Renderer objectRenderer = tileObject.GetComponent<Renderer>();
-        objectRenderer.material.color = color;
+        // change the emission color of the material of the tile
+        float intensity = 5f;
+        float factor = Mathf.Pow(2, intensity);
+        tileObject.GetComponent<Renderer>().material.SetColor("_EmissionColor", color * factor);
+        tileObject.GetComponent<Renderer>().material.SetColor("_DiamondColor", color);
     }
 
     public bool wordValid(string word) {
