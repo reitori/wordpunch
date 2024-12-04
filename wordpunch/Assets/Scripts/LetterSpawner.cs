@@ -35,10 +35,14 @@ public class LetterSpawner : MonoBehaviour
         return new Vector3(x, height, z);
     }
 
-    public void InitializeGrid(char[,] letterGrid)
+    public void InitializeGrid(char[,] letterGrid, TileGrid tileGrid)
     {
         int rows = letterGrid.GetLength(0); // Number of rows in the 2D array
         int cols = letterGrid.GetLength(1); // Number of columns in the 2D array
+
+        tileGrid.xSize = rows;
+        tileGrid.ySize = cols;
+
 
         float cylinderHeight = rows * letterSpacing;
         float cylinderRadius = (cols * letterSpacing) / (2 * Mathf.PI);
@@ -55,6 +59,34 @@ public class LetterSpawner : MonoBehaviour
                 {
                     Vector3 spawnPosition = GetPositionOnCylinder(row, col, rows, cols, cylinderRadius);
                     GameObject letterInstance = Instantiate(letterPrefab, spawnPosition, Quaternion.identity);
+                    
+                    Renderer renderer = letterInstance.GetComponent<Renderer>(); //Enables Transparancy 
+                    Material material = renderer.material;
+
+                    material.SetFloat("_Mode", 3); // For Standard Shader; sets rendering mode to Transparent
+                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    material.SetInt("_ZWrite", 0);
+                    material.DisableKeyword("_ALPHATEST_ON");
+                    material.EnableKeyword("_ALPHABLEND_ON");
+                    material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                    material.renderQueue = 3000;
+
+                    // destroy the mesh collider so we can rely on the boxcollider
+                    Destroy(letterInstance.GetComponent<MeshCollider>());
+                    Collider BCollider = letterInstance.AddComponent<BoxCollider>();
+                    BCollider.transform.localScale = new Vector3(2f, 2f, 0.5f);
+                    
+                    // create a rigidbody so that the hand "trigger" can detect the tile
+                    Rigidbody rigidbody = letterInstance.AddComponent<Rigidbody>();
+                    rigidbody.isKinematic = false;
+                    rigidbody.useGravity = false;
+                    
+                    // add a "Tile" script to the gameobject so we can initialize and access variables like x and y and states
+                    Tile tile = letterInstance.AddComponent<Tile>();
+                    tile.initializeTile(row, col, letter);
+
+                    tileGrid.SetTile(row, col, letterInstance); // assigns tileGrid[x, y] to the GameObject instance from the letter 
 
                     // Scale the letter
                     letterInstance.transform.localScale = new Vector3(letterScale, letterScale, letterScale);
