@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Oculus.Interaction;
 using UnityEngine;
 
 public class LetterSpawner : MonoBehaviour
@@ -81,6 +82,12 @@ public class LetterSpawner : MonoBehaviour
                     Rigidbody rigidbody = letterInstance.AddComponent<Rigidbody>();
                     rigidbody.isKinematic = false;
                     rigidbody.useGravity = false;
+
+                    RayInteractable rayInteractable = letterInstance.AddComponent<RayInteractable>();
+                    InteractableUnityEventWrapper eventWrapper = letterInstance.AddComponent<InteractableUnityEventWrapper>();
+                    eventWrapper.InjectInteractableView(rayInteractable);
+                    AddHoverEvents(eventWrapper, letterInstance);
+
                     
                     // add a "Tile" script to the gameobject so we can initialize and access variables like x and y and states
                     Tile tile = letterInstance.AddComponent<Tile>();
@@ -118,4 +125,39 @@ public class LetterSpawner : MonoBehaviour
     {
 
     }
+    // Function to handle hover and unhover events
+    private void AddHoverEvents(InteractableUnityEventWrapper eventWrapper, GameObject letterInstance)
+    {
+        // Add listeners for hover and unhover
+        eventWrapper.WhenHover.AddListener(() => OnLetterHover(letterInstance));
+        eventWrapper.WhenUnhover.AddListener(() => OnLetterUnhover(letterInstance));
+    }
+
+    // Called when the letter is hovered over
+    private void OnLetterHover(GameObject letterInstance)
+    {
+        // Example: Change color on hover
+        Renderer renderer = letterInstance.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material.color = Color.yellow;
+        }
+
+        Debug.Log("Hovered over: " + letterInstance.name);
+    }
+
+    // Called when the letter is unhovered
+    private void OnLetterUnhover(GameObject letterInstance)
+    {
+        // Reset color
+        Renderer renderer = letterInstance.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material.color = Color.white;
+        }
+
+        Debug.Log("Stopped hovering over: " + letterInstance.name);
+    }
+
+    
 }
