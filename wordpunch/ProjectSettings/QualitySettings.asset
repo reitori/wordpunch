@@ -253,7 +253,11 @@ QualitySettings:
     excludedTargetPlatforms: []
   - serializedVersion: 3
     name: Ultra
+<<<<<<< Updated upstream
     pixelLightCount: 4
+=======
+    pixelLightCount: 1
+>>>>>>> Stashed changes
     shadows: 2
     shadowResolution: 2
     shadowProjection: 1
@@ -272,7 +276,11 @@ QualitySettings:
     softVegetation: 1
     realtimeReflectionProbes: 1
     billboardsFaceCameraPosition: 1
+<<<<<<< Updated upstream
     useLegacyDetailDistribution: 1
+=======
+    useLegacyDetailDistribution: 0
+>>>>>>> Stashed changes
     vSyncCount: 0
     realtimeGICPUUsage: 100
     lodBias: 2
