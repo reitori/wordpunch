@@ -34,11 +34,30 @@ public class Events : MonoBehaviour
 
         Tile hitTile = other.GetComponent<Tile>();
 
-    }
+        // if contains, return
+        if (gameManager.highlightedTiles.Contains(hitTile))
+        {
+            return;
+        }
 
-    public void OnHover2()
-    {
-        Debug.Log($"Hover2 detected!");
+        // basic logic:
+        // if in selectMode, do ...
+        // if in fistMode, and letter is in word, do ...
+
+        // yellow_emission: r:190, g:90, b:30, a:255, intensity: 5, yellow_base: r:190, g:40, b:0, a:150, intensity: 1
+        gameManager.highlightedTiles.Add(hitTile);
+        Color baseColor = new Color(190, 40, 0, 150);
+        Color emissionColor = new Color(190, 90, 30, 255);
+        Debug.Log($"Highlighting tile: {hitTile.x}, {hitTile.y}");
+        gameManager.highlightTile(hitTile.x, hitTile.y, baseColor, emissionColor);
+        if (gameManager.highlightedTiles.Count > 2)
+        {
+            gameManager.invalidWarn();
+        }
+        else if (gameManager.highlightedTiles.Count > 3)
+        {
+            gameManager.explodeWord();
+        }
     }
 
     IEnumerator DissolveCo()

@@ -97,7 +97,7 @@ public class LetterSpawner : MonoBehaviour
                     Tile tile = letterInstance.transform.GetChild(0).gameObject.AddComponent<Tile>();
                     tile.initializeTile(row, col, letter);
 
-                    tileGrid.SetTile(row, col, letterInstance); // assigns tileGrid[x, y] to the GameObject instance from the letter 
+                    tileGrid.SetTile(row, col, letterInstance.transform.GetChild(0).gameObject); // assigns tileGrid[x, y] to the GameObject instance from the letter 
 
                     // Scale the letter
                     letterInstance.transform.localScale = new Vector3(letterScale, letterScale, letterScale);
@@ -106,6 +106,59 @@ public class LetterSpawner : MonoBehaviour
                     // TODO:Store row and column index in the letter's script or component
                 }
             }
+        }
+    }
+
+    public void SpawnLetterAt(int x, int y, char[,] letterGrid, TileGrid tileGrid, char selectedLetter)
+    {
+        int rows = letterGrid.GetLength(0);
+        int cols = letterGrid.GetLength(1);
+
+        float cylinderHeight = rows * letterSpacing;
+        float cylinderRadius = (cols * letterSpacing) / (2 * Mathf.PI);
+
+        GameObject letterPrefab = GetLetterPrefab(selectedLetter);
+
+        if (letterPrefab != null)
+        {
+            Vector3 spawnPosition = GetPositionOnCylinder(x, y, rows, cols, cylinderRadius);
+
+            GameObject letterInstance = Instantiate(letterPrefab, spawnPosition, Quaternion.identity);
+
+            // set dissolve amount to 1
+            Renderer renderer = letterInstance.transform.GetChild(0).GetComponent<Renderer>();
+            Material material = renderer.material;
+            material.SetFloat("_DissolveAmount", 1);
+
+            // add tile
+            Tile tile = letterInstance.transform.GetChild(0).gameObject.AddComponent<Tile>();
+            tile.initializeTile(x, y, selectedLetter);
+
+            // Add the letter to the tile grid
+            tileGrid.SetTile(x, y, letterInstance.transform.GetChild(0).gameObject);
+
+
+            // Scale the letter
+            letterInstance.transform.localScale = new Vector3(letterScale, letterScale, letterScale);
+            Vector3 targetPosition = new Vector3(0, spawnPosition.y, 0);
+            letterInstance.transform.rotation = Quaternion.LookRotation(targetPosition - spawnPosition);
+
+            // Store the letter in the grid
+            letterGrid[x, y] = selectedLetter;
+
+            // de-dissolve the letter
+            StartCoroutine(DissolveCo(material, 0.04f, 0.08f));
+        }
+    }
+
+    IEnumerator DissolveCo(Material mat, float dissolveRate, float refreshRate)
+    {
+        float counter = 1;
+        while (mat.GetFloat("_DissolveAmount") > 0)
+        {
+            counter -= dissolveRate;
+            mat.SetFloat("_DissolveAmount", counter);
+            yield return new WaitForSeconds(refreshRate);
         }
     }
 

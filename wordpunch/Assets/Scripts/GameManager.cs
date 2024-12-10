@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using Exploder.Utils;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class GameManager : MonoBehaviour
     public TileGrid tileGrid;
     // public LinkedList<GameObject> highlightedTiles;
     public List<Tile> highlightedTiles;
+    public bool selectLettersMode = true;
     
     // Start is called before the first frame update
     void Start()
@@ -35,6 +37,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Thought: utilize update() to create color flow effect on highlighted tiles
     }
 
     
@@ -56,12 +59,19 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    public void highlightTile(int x, int y, Color color)
+    public void highlightTile(int x, int y, Color baseColor, Color emissionColor)
     {
-        GameObject tileObject = tileGrid.tiles[x, y];
-        // change the emission color of the material of the tile
-        Renderer tileRenderer = tileObject.GetComponent<Renderer>();
-        tileRenderer.material.SetColor("_EmissionColor", color * 5f);
+        // yellow_emission: r:190, g:90, b:30, a:255, intensity: 5, yellow_base: r:190, g:40, b:0, a:150, intensity: 1
+        GameObject tile = tileGrid.tiles[x, y];
+        Renderer tileRenderer = tile.GetComponent<Renderer>();
+        // change '_EmissionColor' of the material
+        // float intensity = 1f;
+        // float factor = Mathf.Pow(2, intensity);
+        tileRenderer.material.SetColor("_EmissionColor", emissionColor);
+        // change '_BaseColor' of the material
+        // intensity = 1f;
+        // factor = Mathf.Pow(2, intensity);
+        tileRenderer.material.SetColor("_BaseColor", baseColor);
     }
 
     public bool wordValid(string word) {
@@ -70,14 +80,24 @@ public class GameManager : MonoBehaviour
 
 
     public void explodeWord() {
-        HandCollisionHandler hand = GameObject.Find("Hand").GetComponent<HandCollisionHandler>();
-        hand.selectLettersMode = false;
-        changeGridTransparancy(0.0f);
+        // selectLettersMode = false; -> done in gesture detector?
+        // changeGridTransparancy(0.0f);
 
         foreach (Tile tile in highlightedTiles) {
-            highlightTile(tile.x, tile.y, Color.green);
+            GameObject tileObject = tileGrid.tiles[tile.x, tile.y];
+            ExploderSingleton.Instance.ExplodeObject(tileObject);
         }
-        Invoke("restoreTiles", 3f);
+        Invoke("refillTiles", 2f);
+    }
+
+    public void refillTiles() {
+        foreach (Tile tile in highlightedTiles) {
+            char selectedLetter = gridGenerator.GetRandomLetter();
+            letterSpawner.SpawnLetterAt(tile.x, tile.y, letterGrid, tileGrid, selectedLetter);
+        }
+        highlightedTiles.Clear();
+
+        selectLettersMode = true;
     }
 
     public void changeGridTransparancy(float normTransparency)
@@ -97,27 +117,36 @@ public class GameManager : MonoBehaviour
     }
 
     public void invalidWarn() {
-        HandCollisionHandler hand = GameObject.Find("Hand").GetComponent<HandCollisionHandler>();
-        hand.selectLettersMode = false;
+        selectLettersMode = false;
 
         foreach (Tile tile in highlightedTiles) {
-            highlightTile(tile.x, tile.y, Color.red);
+            //basecolor black, emissioncolor red
+            Color baseColor = new Color(0, 0, 0, 255);
+            Color emissionColor = new Color(255, 0, 0, 255);
+            highlightTile(tile.x, tile.y, baseColor, emissionColor);
         }
         // add effect
         Invoke("restoreTiles", 3f);
     }
 
     public void restoreTiles() {
-        changeGridTransparancy(1.0f);
+        // changeGridTransparancy(1.0f);
 
         foreach (Tile tile in highlightedTiles) {
-            highlightTile(tile.x, tile.y, Color.white);
+            // basecolor r:65, g:85, b:110, a:150, intensity: 0
+            // emissioncolor r:100, g:135, b:190, a:255, intensity: 2.5
+            Color baseColor = new Color(65, 85, 110, 150);
+            Color emissionColor = new Color(100, 135, 190, 255);
+
+            GameObject tileObject = tileGrid.tiles[tile.x, tile.y];
+            Renderer tileRenderer = tileObject.GetComponent<Renderer>();
+            tileRenderer.material.SetColor("_EmissionColor", emissionColor);
+            tileRenderer.material.SetColor("_BaseColor", baseColor);
             tile.isHighlighted = false;
         }
         highlightedTiles.Clear();
-
-        HandCollisionHandler hand = GameObject.Find("Hand").GetComponent<HandCollisionHandler>();
-        hand.selectLettersMode = true;
+        
+        selectLettersMode = true;
     }
     
 }
