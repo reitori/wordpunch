@@ -103,6 +103,7 @@ public class LetterSpawner : MonoBehaviour
                     letterInstance.transform.localScale = new Vector3(letterScale, letterScale, letterScale);
                     Vector3 targetPosition = new Vector3(0, spawnPosition.y, 0);
                     letterInstance.transform.rotation = Quaternion.LookRotation(targetPosition - spawnPosition);
+                    
                     // TODO:Store row and column index in the letter's script or component
                 }
             }

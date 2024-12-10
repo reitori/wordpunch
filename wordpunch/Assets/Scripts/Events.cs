@@ -31,9 +31,29 @@ public class Events : MonoBehaviour
     {
         Debug.Log($"Hover detected!");
         // StartCoroutine(DissolveCo());
+       
 
         Tile hitTile = other.GetComponent<Tile>();
-
+        if (gameManager.highlightedTiles.Count() != 0)
+        {
+            if (hitTile.isHighlighted == false && gameManager.tileGrid.ValidNewTile(gameManager.highlightedTiles.Last<Tile>(), hitTile))
+            {
+                gameManager.highlightedTiles.Add(hitTile);
+                gameManager.highlightTile(hitTile.x, hitTile.y, Color.yellow);
+                Debug.Log("Hand hit: " + other.gameObject.GetComponent<Tile>().letter + " (" +
+                          other.gameObject.GetComponent<Tile>().x + ", " + other.gameObject.GetComponent<Tile>().y + ")");
+                hitTile.isHighlighted = true;
+                return;
+            }
+        }
+        else
+        {
+            gameManager.highlightedTiles.Add(hitTile);
+            gameManager.highlightTile(hitTile.x, hitTile.y, Color.yellow);
+            Debug.Log("Hand hit: " + other.gameObject.GetComponent<Tile>().letter + " (" +
+                other.gameObject.GetComponent<Tile>().x + ", " + other.gameObject.GetComponent<Tile>().y + ")");
+            hitTile.isHighlighted = true;
+        }
     }
 
     public void OnHover2()
