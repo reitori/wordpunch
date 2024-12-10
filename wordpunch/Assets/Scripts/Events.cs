@@ -52,11 +52,22 @@ public class Events : MonoBehaviour
         gameManager.highlightTile(hitTile.x, hitTile.y, baseColor, emissionColor);
         if (gameManager.highlightedTiles.Count > 2)
         {
-            gameManager.invalidWarn();
-        }
-        else if (gameManager.highlightedTiles.Count > 3)
-        {
-            gameManager.explodeWord();
+            string word = "";
+            foreach (Tile tile in gameManager.highlightedTiles)
+            {
+                word += tile.letter;
+            }
+
+            if (gameManager.wordValid(word))
+            {
+                gameManager.explodeWord();
+            }
+            else
+            {
+                // call with current material
+                Material material = other.GetComponent<Renderer>().material;
+                gameManager.invalidWarn(material);
+            }
         }
     }
 

@@ -63,15 +63,15 @@ public class GameManager : MonoBehaviour
     {
         // yellow_emission: r:190, g:90, b:30, a:255, intensity: 5, yellow_base: r:190, g:40, b:0, a:150, intensity: 1
         GameObject tile = tileGrid.tiles[x, y];
-        Renderer tileRenderer = tile.GetComponent<Renderer>();
-        // change '_EmissionColor' of the material
-        // float intensity = 1f;
-        // float factor = Mathf.Pow(2, intensity);
-        tileRenderer.material.SetColor("_EmissionColor", emissionColor);
+        var tileRenderer = tile.GetComponent<Renderer>();
         // change '_BaseColor' of the material
         // intensity = 1f;
         // factor = Mathf.Pow(2, intensity);
         tileRenderer.material.SetColor("_BaseColor", baseColor);
+        // change '_EmissionColor' of the material
+        // float intensity = 1f;
+        // float factor = Mathf.Pow(2, intensity);
+        tileRenderer.material.SetColor("_EmissionColor", emissionColor);
     }
 
     public bool wordValid(string word) {
@@ -116,33 +116,43 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void invalidWarn() {
+    public void invalidWarn(Material material) {
         selectLettersMode = false;
 
         foreach (Tile tile in highlightedTiles) {
             //basecolor black, emissioncolor red
-            Color baseColor = new Color(0, 0, 0, 255);
-            Color emissionColor = new Color(255, 0, 0, 255);
+            Color baseColor = new Color(0, 0, 0);
+            Color emissionColor = new Color(255, 0, 0);
             highlightTile(tile.x, tile.y, baseColor, emissionColor);
         }
-        // add effect
-        Invoke("restoreTiles", 3f);
+        // invoke restoreTiles after 3 seconds with material
+        StartCoroutine(restoreTiles(material, 3f));
     }
 
-    public void restoreTiles() {
+    IEnumerator restoreTiles(Material material, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        restoreTile(material);
+    }
+
+    public void restoreTile(Material material)
+        {
         // changeGridTransparancy(1.0f);
 
         foreach (Tile tile in highlightedTiles) {
             // basecolor r:65, g:85, b:110, a:150, intensity: 0
             // emissioncolor r:100, g:135, b:190, a:255, intensity: 2.5
-            Color baseColor = new Color(65, 85, 110, 150);
-            Color emissionColor = new Color(100, 135, 190, 255);
+            // Color baseColor = new Color(65, 85, 110);
+            // Color emissionColor = new Color(100, 135, 190);
 
-            GameObject tileObject = tileGrid.tiles[tile.x, tile.y];
-            Renderer tileRenderer = tileObject.GetComponent<Renderer>();
-            tileRenderer.material.SetColor("_EmissionColor", emissionColor);
-            tileRenderer.material.SetColor("_BaseColor", baseColor);
-            tile.isHighlighted = false;
+            // GameObject tileObject = tileGrid.tiles[tile.x, tile.y];
+            // Renderer tileRenderer = tileObject.GetComponent<Renderer>();
+            // tileRenderer.material.SetColor("_EmissionColor", emissionColor);
+            // tileRenderer.material.SetColor("_BaseColor", baseColor);
+            // tile.isHighlighted = false;
+
+            //set back to original material
+            tileGrid.tiles[tile.x, tile.y].GetComponent<Renderer>().material = material;
         }
         highlightedTiles.Clear();
         

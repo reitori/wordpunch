@@ -44,7 +44,7 @@ public class HandCollisionHandler : MonoBehaviour
                 else
                 {
                     // word is invalid
-                    gameManager.invalidWarn();
+                    // gameManager.invalidWarn();
                 }
             }
     }
