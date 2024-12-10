@@ -93,8 +93,8 @@ public class LetterSpawner : MonoBehaviour
                     //AddHoverEvents(eventWrapper, letterInstance);
 
                     
-                    // add a "Tile" script to the gameobject so we can initialize and access variables like x and y and states
-                    Tile tile = letterInstance.AddComponent<Tile>();
+                    // add a "Tile" script to the gameobject's child
+                    Tile tile = letterInstance.transform.GetChild(0).gameObject.AddComponent<Tile>();
                     tile.initializeTile(row, col, letter);
 
                     tileGrid.SetTile(row, col, letterInstance); // assigns tileGrid[x, y] to the GameObject instance from the letter 
