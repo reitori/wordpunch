@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
-public class Events : MonoBehaviour
+public class effectController : MonoBehaviour
 {
     public MeshRenderer mesh;
+    // public VisualEffect vfx;
     public float dissolveRate = 0.0125f;
     public float refreshRate = 0.025f;
     private Material mat;
-
-    private GameManager gameManager;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,36 +17,28 @@ public class Events : MonoBehaviour
         {
             mat = mesh.material;
         }
-        // initialize gameManager
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-    }
-
-    public void OnHover(GameObject other)
-    {
-        Debug.Log($"Hover detected!");
-        // StartCoroutine(DissolveCo());
-
-        Tile hitTile = other.GetComponent<Tile>();
-
-    }
-
-    public void OnHover2()
-    {
-        Debug.Log($"Hover2 detected!");
+        // if press space, start dissolve
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(DissolveCo());
+        }
     }
 
     IEnumerator DissolveCo()
     {
-        float counter = 0;
-        while (mat.GetFloat("_DissolveAmount") < 1)
+        // if (vfx != null)
+        // {
+        //     vfx.Play();
+        // }
+        float counter = 1;
+        while (mat.GetFloat("_DissolveAmount") > 0)
         {
-            counter += dissolveRate;
+            counter -= dissolveRate;
             mat.SetFloat("_DissolveAmount", counter);
             yield return new WaitForSeconds(refreshRate);
         }
