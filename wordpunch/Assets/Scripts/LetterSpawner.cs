@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Oculus.Interaction;
 using UnityEngine;
 
 public class LetterSpawner : MonoBehaviour
@@ -60,27 +61,37 @@ public class LetterSpawner : MonoBehaviour
                     Vector3 spawnPosition = GetPositionOnCylinder(row, col, rows, cols, cylinderRadius);
                     GameObject letterInstance = Instantiate(letterPrefab, spawnPosition, Quaternion.identity);
                     
-                    Renderer renderer = letterInstance.GetComponent<Renderer>(); //Enables Transparancy 
-                    Material material = renderer.material;
+                    // Renderer renderer = letterInstance.GetComponent<Renderer>(); //Enables Transparancy 
+                    // get letterInstance's child's renderer
+                    // Renderer renderer = letterInstance.transform.GetChild(0).GetComponent<Renderer>();
 
-                    material.SetFloat("_Mode", 3); // For Standard Shader; sets rendering mode to Transparent
-                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    material.SetInt("_ZWrite", 0);
-                    material.DisableKeyword("_ALPHATEST_ON");
-                    material.EnableKeyword("_ALPHABLEND_ON");
-                    material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                    material.renderQueue = 3000;
-
-                    // destroy the mesh collider so we can rely on the boxcollider
-                    Destroy(letterInstance.GetComponent<MeshCollider>());
-                    Collider BCollider = letterInstance.AddComponent<BoxCollider>();
-                    BCollider.transform.localScale = new Vector3(2f, 2f, 0.5f);
                     
-                    // create a rigidbody so that the hand "trigger" can detect the tile
-                    Rigidbody rigidbody = letterInstance.AddComponent<Rigidbody>();
-                    rigidbody.isKinematic = false;
-                    rigidbody.useGravity = false;
+                    // Material material = renderer.material;
+
+                    // material.SetFloat("_Mode", 3); // For Standard Shader; sets rendering mode to Transparent
+                    // material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    // material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    // material.SetInt("_ZWrite", 0);
+                    // material.DisableKeyword("_ALPHATEST_ON");
+                    // material.EnableKeyword("_ALPHABLEND_ON");
+                    // material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                    // material.renderQueue = 3000;
+
+                    // // destroy the mesh collider so we can rely on the boxcollider
+                    // Destroy(letterInstance.GetComponent<MeshCollider>());
+                    // Collider BCollider = letterInstance.AddComponent<BoxCollider>();
+                    // BCollider.transform.localScale = new Vector3(2f, 2f, 0.5f);
+                    
+                    // // create a rigidbody so that the hand "trigger" can detect the tile
+                    // Rigidbody rigidbody = letterInstance.AddComponent<Rigidbody>();
+                    // rigidbody.isKinematic = true;
+                    // rigidbody.useGravity = false;
+
+                    // RayInteractable rayInteractable = letterInstance.AddComponent<RayInteractable>();
+                    // InteractableUnityEventWrapper eventWrapper = letterInstance.AddComponent<InteractableUnityEventWrapper>();
+                    // eventWrapper.InjectInteractableView(rayInteractable);
+                    //AddHoverEvents(eventWrapper, letterInstance);
+
                     
                     // add a "Tile" script to the gameobject so we can initialize and access variables like x and y and states
                     Tile tile = letterInstance.AddComponent<Tile>();
@@ -118,4 +129,39 @@ public class LetterSpawner : MonoBehaviour
     {
 
     }
+    // Function to handle hover and unhover events
+    private void AddHoverEvents(InteractableUnityEventWrapper eventWrapper, GameObject letterInstance)
+    {
+        // Add listeners for hover and unhover
+        eventWrapper.WhenHover.AddListener(() => OnLetterHover(letterInstance));
+        eventWrapper.WhenUnhover.AddListener(() => OnLetterUnhover(letterInstance));
+    }
+
+    // Called when the letter is hovered over
+    private void OnLetterHover(GameObject letterInstance)
+    {
+        // Example: Change color on hover
+        Renderer renderer = letterInstance.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material.color = Color.yellow;
+        }
+
+        Debug.Log("Hovered over: " + letterInstance.name);
+    }
+
+    // Called when the letter is unhovered
+    private void OnLetterUnhover(GameObject letterInstance)
+    {
+        // Reset color
+        Renderer renderer = letterInstance.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material.color = Color.white;
+        }
+
+        Debug.Log("Stopped hovering over: " + letterInstance.name);
+    }
+
+    
 }
