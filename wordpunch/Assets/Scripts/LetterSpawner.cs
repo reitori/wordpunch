@@ -61,32 +61,36 @@ public class LetterSpawner : MonoBehaviour
                     Vector3 spawnPosition = GetPositionOnCylinder(row, col, rows, cols, cylinderRadius);
                     GameObject letterInstance = Instantiate(letterPrefab, spawnPosition, Quaternion.identity);
                     
-                    Renderer renderer = letterInstance.GetComponent<Renderer>(); //Enables Transparancy 
-                    Material material = renderer.material;
+                    // Renderer renderer = letterInstance.GetComponent<Renderer>(); //Enables Transparancy 
+                    // get letterInstance's child's renderer
+                    // Renderer renderer = letterInstance.transform.GetChild(0).GetComponent<Renderer>();
 
-                    material.SetFloat("_Mode", 3); // For Standard Shader; sets rendering mode to Transparent
-                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    material.SetInt("_ZWrite", 0);
-                    material.DisableKeyword("_ALPHATEST_ON");
-                    material.EnableKeyword("_ALPHABLEND_ON");
-                    material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                    material.renderQueue = 3000;
-
-                    // destroy the mesh collider so we can rely on the boxcollider
-                    Destroy(letterInstance.GetComponent<MeshCollider>());
-                    Collider BCollider = letterInstance.AddComponent<BoxCollider>();
-                    BCollider.transform.localScale = new Vector3(2f, 2f, 0.5f);
                     
-                    // create a rigidbody so that the hand "trigger" can detect the tile
-                    Rigidbody rigidbody = letterInstance.AddComponent<Rigidbody>();
-                    rigidbody.isKinematic = false;
-                    rigidbody.useGravity = false;
+                    // Material material = renderer.material;
 
-                    RayInteractable rayInteractable = letterInstance.AddComponent<RayInteractable>();
-                    InteractableUnityEventWrapper eventWrapper = letterInstance.AddComponent<InteractableUnityEventWrapper>();
-                    eventWrapper.InjectInteractableView(rayInteractable);
-                    AddHoverEvents(eventWrapper, letterInstance);
+                    // material.SetFloat("_Mode", 3); // For Standard Shader; sets rendering mode to Transparent
+                    // material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    // material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    // material.SetInt("_ZWrite", 0);
+                    // material.DisableKeyword("_ALPHATEST_ON");
+                    // material.EnableKeyword("_ALPHABLEND_ON");
+                    // material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                    // material.renderQueue = 3000;
+
+                    // // destroy the mesh collider so we can rely on the boxcollider
+                    // Destroy(letterInstance.GetComponent<MeshCollider>());
+                    // Collider BCollider = letterInstance.AddComponent<BoxCollider>();
+                    // BCollider.transform.localScale = new Vector3(2f, 2f, 0.5f);
+                    
+                    // // create a rigidbody so that the hand "trigger" can detect the tile
+                    // Rigidbody rigidbody = letterInstance.AddComponent<Rigidbody>();
+                    // rigidbody.isKinematic = true;
+                    // rigidbody.useGravity = false;
+
+                    // RayInteractable rayInteractable = letterInstance.AddComponent<RayInteractable>();
+                    // InteractableUnityEventWrapper eventWrapper = letterInstance.AddComponent<InteractableUnityEventWrapper>();
+                    // eventWrapper.InjectInteractableView(rayInteractable);
+                    //AddHoverEvents(eventWrapper, letterInstance);
 
                     
                     // add a "Tile" script to the gameobject so we can initialize and access variables like x and y and states
