@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     // public LinkedList<GameObject> highlightedTiles;
     public List<Tile> highlightedTiles;
     public bool selectLettersMode = true;
+
+    public bool isPunching;
     
     // Start is called before the first frame update
     void Start()
@@ -32,6 +34,7 @@ public class GameManager : MonoBehaviour
         
         // highlightedTiles = new LinkedList<GameObject>();
         highlightedTiles = new List<Tile>();
+        isPunching = false;
     }
 
     // Update is called once per frame

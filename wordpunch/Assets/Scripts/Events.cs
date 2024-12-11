@@ -17,6 +17,7 @@ public class Events : MonoBehaviour
         {
             mat = mesh.material;
         }
+        
         // initialize gameManager
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
@@ -45,12 +46,15 @@ public class Events : MonoBehaviour
         // if in fistMode, and letter is in word, do ...
 
         // yellow_emission: r:190, g:90, b:30, a:255, intensity: 5, yellow_base: r:190, g:40, b:0, a:150, intensity: 1
-        gameManager.highlightedTiles.Add(hitTile);
-        Color baseColor = new Color(190, 40, 0, 150);
-        Color emissionColor = new Color(190, 90, 30, 255);
-        Debug.Log($"Highlighting tile: {hitTile.x}, {hitTile.y}");
-        gameManager.highlightTile(hitTile.x, hitTile.y, baseColor, emissionColor);
-        if (gameManager.highlightedTiles.Count > 2)
+        if(!gameManager.isPunching){
+
+            gameManager.highlightedTiles.Add(hitTile);
+            Color baseColor = new Color(190, 40, 0, 150);
+            Color emissionColor = new Color(190, 90, 30, 255);
+            Debug.Log($"Highlighting tile: {hitTile.x}, {hitTile.y}");
+            gameManager.highlightTile(hitTile.x, hitTile.y, baseColor, emissionColor);
+        }
+        else
         {
             string word = "";
             foreach (Tile tile in gameManager.highlightedTiles)
@@ -58,7 +62,7 @@ public class Events : MonoBehaviour
                 word += tile.letter;
             }
 
-            if (gameManager.wordValid(word))
+            if (gameManager.wordValid(word) )
             {
                 gameManager.explodeWord();
             }
@@ -70,7 +74,14 @@ public class Events : MonoBehaviour
             }
         }
     }
-
+    public void PunchingGesture(){
+        gameManager.isPunching = true;
+        Debug.Log("Punching Detectect...");
+    } 
+    public void notPunchingGesture(){
+        gameManager.isPunching = false;
+        Debug.Log("No Longer Detected...");
+    } 
     IEnumerator DissolveCo()
     {
         float counter = 0;
