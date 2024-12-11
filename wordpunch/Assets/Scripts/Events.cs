@@ -72,9 +72,7 @@ public class Events : MonoBehaviour
             }
             else
             {
-                // call with current material
-                Material material = other.GetComponent<Renderer>().material;
-                gameManager.invalidWarn(material);
+                gameManager.invalidWarn();
             }
         }
     }

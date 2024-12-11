@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void invalidWarn(Material material) {
+    public void invalidWarn() {
         selectLettersMode = false;
 
         foreach (Tile tile in highlightedTiles) {
@@ -129,16 +129,10 @@ public class GameManager : MonoBehaviour
             highlightTile(tile.x, tile.y, baseColor, emissionColor);
         }
         // invoke restoreTiles after 3 seconds with material
-        StartCoroutine(restoreTiles(material, 3f));
+        Invoke("restoreTile", 2f);
     }
 
-    IEnumerator restoreTiles(Material material, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        restoreTile(material);
-    }
-
-    public void restoreTile(Material material)
+    public void restoreTile()
         {
         // changeGridTransparancy(1.0f);
 
@@ -155,7 +149,7 @@ public class GameManager : MonoBehaviour
             // tile.isHighlighted = false;
 
             //set back to original material
-            tileGrid.tiles[tile.x, tile.y].GetComponent<Renderer>().material = material;
+            tileGrid.tiles[tile.x, tile.y].GetComponent<Renderer>().material = Resources.Load("Materials/dissolve", typeof(Material)) as Material;
         }
         highlightedTiles.Clear();
         
