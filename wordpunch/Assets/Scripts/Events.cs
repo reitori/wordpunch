@@ -36,10 +36,7 @@ public class Events : MonoBehaviour
         Tile hitTile = other.GetComponent<Tile>();
 
         // if contains, return
-        if (gameManager.highlightedTiles.Contains(hitTile))
-        {
-            return;
-        }
+        
 
         // basic logic:
         // if in selectMode, do ...
@@ -47,7 +44,10 @@ public class Events : MonoBehaviour
 
         // yellow_emission: r:190, g:90, b:30, a:255, intensity: 5, yellow_base: r:190, g:40, b:0, a:150, intensity: 1
         if(!gameManager.isPunching){
-
+            if (gameManager.highlightedTiles.Contains(hitTile))
+            {
+                return;
+            }
             gameManager.highlightedTiles.Add(hitTile);
             Color baseColor = new Color(190, 40, 0, 150);
             Color emissionColor = new Color(190, 90, 30, 255);
@@ -56,6 +56,10 @@ public class Events : MonoBehaviour
         }
         else
         {
+            if (!gameManager.highlightedTiles.Contains(hitTile))
+            {
+                return;
+            }
             string word = "";
             foreach (Tile tile in gameManager.highlightedTiles)
             {
