@@ -190,7 +190,7 @@ public class GridGenerator : MonoBehaviour
     }
 
 
-    char GetRandomLetter()
+    public char GetRandomLetter()
     {
         int randomIndex = Random.Range(0, weightedLetters.Count);
         return weightedLetters[randomIndex];

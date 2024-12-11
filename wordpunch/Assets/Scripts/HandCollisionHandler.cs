@@ -44,7 +44,7 @@ public class HandCollisionHandler : MonoBehaviour
                 else
                 {
                     // word is invalid
-                    gameManager.invalidWarn();
+                    // gameManager.invalidWarn();
                 }
             }
     }
@@ -65,7 +65,7 @@ public class HandCollisionHandler : MonoBehaviour
                 if (hitTile.isHighlighted == false && gameManager.tileGrid.ValidNewTile(gameManager.highlightedTiles.Last<Tile>(), hitTile))
                 {
                     gameManager.highlightedTiles.Add(hitTile);
-                    gameManager.highlightTile(hitTile.x, hitTile.y, Color.yellow);
+                    gameManager.highlightTile(hitTile.x, hitTile.y, Color.yellow, Color.yellow);
                     Debug.Log("Hand hit: " + other.gameObject.GetComponent<Tile>().letter + " (" +
                               other.gameObject.GetComponent<Tile>().x + ", " + other.gameObject.GetComponent<Tile>().y + ")");
                     hitTile.isHighlighted = true;
@@ -75,7 +75,7 @@ public class HandCollisionHandler : MonoBehaviour
             else
             {
                 gameManager.highlightedTiles.Add(hitTile);
-                gameManager.highlightTile(hitTile.x, hitTile.y, Color.yellow);
+                gameManager.highlightTile(hitTile.x, hitTile.y, Color.yellow, Color.yellow);
                 Debug.Log("Hand hit: " + other.gameObject.GetComponent<Tile>().letter + " (" +
                     other.gameObject.GetComponent<Tile>().x + ", " + other.gameObject.GetComponent<Tile>().y + ")");
                 hitTile.isHighlighted = true;
